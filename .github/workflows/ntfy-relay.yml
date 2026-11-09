@@ -1,0 +1,23 @@
+name: Flowzz ntfy delivery
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: flowzz-ntfy-delivery
+  cancel-in-progress: false
+jobs:
+  deliver:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Deliver reserved notifications
+        env:
+          FLOWZZ_URL: ${{ secrets.FLOWZZ_URL }}
+          RELAY_KEY: ${{ secrets.RELAY_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node relay.mjs
